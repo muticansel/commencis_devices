@@ -3,7 +3,7 @@ import { AfterInsert, AfterRemove, AfterUpdate, Entity, Column, PrimaryGenerated
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
-    id: number;
+    id: number; // test
 
     @Column()
     email: string;
