@@ -21,8 +21,17 @@ export class DevicesService {
         return this.repo.findBy({ });
     }
 
+    async update(id: number, attrs: Partial<Device>) {
+        const device = await this.repo.findOneBy({ id });
+        if(!device) {
+            throw new Error('Device not found');
+        }
+
+        Object.assign(device, attrs);
+        return this.repo.save(device);
+    }
+
     async delete(id: number) {
-        console.log("IDDDD: ", id)
         const device = await this.findOne(id);
         if(!device) {
             throw new Error('Device not found');
