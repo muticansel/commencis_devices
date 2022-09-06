@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Device } from './device.entity';
@@ -24,7 +24,7 @@ export class DevicesService {
     async update(id: number, attrs: Partial<Device>) {
         const device = await this.repo.findOneBy({ id });
         if(!device) {
-            throw new Error('Device not found');
+            throw new NotFoundException('Device not found');
         }
 
         Object.assign(device, attrs);
@@ -34,7 +34,7 @@ export class DevicesService {
     async delete(id: number) {
         const device = await this.findOne(id);
         if(!device) {
-            throw new Error('Device not found');
+            throw new NotFoundException('Device not found');
         }
 
         return this.repo.remove(device);
