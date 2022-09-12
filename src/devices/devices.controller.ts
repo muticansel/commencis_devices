@@ -1,17 +1,22 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { DevicesService } from './devices.service';
 import { CreateDeviceDto } from './dtos/create-device.dto';
 import { UpdateDeviceDto } from './dtos/update-device.dto';
 import { CurrentUser } from '../users/decorators/current-user-decorator';
 import { User } from '../users/user.entity';
+import { DeviceDto } from './dtos/device.dto';
+import { Serialize } from '../interceptors/serialize-interceptor';
+import { AuthGuard } from '../guards/auth.guard';
 
 @Controller('devices')
 export class DevicesController {
     constructor(private devicesService: DevicesService) {};
 
     @Post('/')
+    @UseGuards(AuthGuard)
+    @Serialize(DeviceDto)
     createDevice(@Body() body: CreateDeviceDto, @CurrentUser() user: User) {
-        this.devicesService.create(body, user);
+        return this.devicesService.create(body, user);
     }
 
     @Get('/')
