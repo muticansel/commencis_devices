@@ -1,4 +1,5 @@
-import { AfterInsert, AfterRemove, AfterUpdate, Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { AfterInsert, AfterRemove, AfterUpdate, Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { User } from "../users/user.entity";
 
 @Entity()
 export class Device {
@@ -10,6 +11,9 @@ export class Device {
 
     @Column()
     possessionDate: Date;
+
+    @ManyToOne(() => User, (user) => user.devices)
+    user: User;
 
     @AfterInsert()
     logInsert() {

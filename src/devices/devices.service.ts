@@ -1,16 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../users/user.entity';
 import { Repository } from 'typeorm';
 import { Device } from './device.entity';
+import { CreateDeviceDto } from './dtos/create-device.dto';
 
 @Injectable()
 export class DevicesService {
     constructor(@InjectRepository(Device) private repo: Repository<Device>) {}
 
-    create(name: string, possessionDate: Date) {
-        const user = this.repo.create({ name, possessionDate });
+    create(deviceDto: CreateDeviceDto, user: User) {
+        const device = this.repo.create(deviceDto);
+        device.user = user;
 
-        return this.repo.save(user);
+        return this.repo.save(device);
     }
 
     findOne(id: number) {
