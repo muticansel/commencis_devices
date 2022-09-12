@@ -6,6 +6,8 @@ export class DeviceDto {
     name: string;
     @Expose()
     possessionDate: Date;
+    @Expose()
+    approved: boolean;
 
     @Transform(({ obj }) => obj.user.id)
     @Expose()

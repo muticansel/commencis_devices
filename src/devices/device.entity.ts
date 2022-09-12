@@ -4,7 +4,10 @@ import { User } from "../users/user.entity";
 @Entity()
 export class Device {
     @PrimaryGeneratedColumn()
-    id: number; // test
+    id: number;
+
+    @Column({ default: false })
+    approved: boolean;
 
     @Column()
     name: string;

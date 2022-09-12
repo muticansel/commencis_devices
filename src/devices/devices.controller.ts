@@ -7,6 +7,7 @@ import { User } from '../users/user.entity';
 import { DeviceDto } from './dtos/device.dto';
 import { Serialize } from '../interceptors/serialize-interceptor';
 import { AuthGuard } from '../guards/auth.guard';
+import { ApproveDeviceDto } from './dtos/approve-device.dto';
 
 @Controller('devices')
 export class DevicesController {
@@ -25,12 +26,9 @@ export class DevicesController {
     }
 
     @Patch('/:id')
-    updateDevice(@Param('id') id: string, @Body() body: UpdateDeviceDto) {
-        const updatedDevice = {
-            possessionDate: new Date(body.possessionDate),
-            name: body.name
-        }
-        return this.devicesService.update(parseInt(id), updatedDevice)
+    approveDevice(@Param('id') id: string, @Body() body: ApproveDeviceDto) {
+        console.log(body);
+        return this.devicesService.changeApproval(id, body.approved)
     }
 
     @Delete('/:id')
