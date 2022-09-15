@@ -44,7 +44,6 @@ export class DevicesService {
     }
 
     async changeApproval(id: string, approved: boolean) {
-        console.log(approved);
         const device = await this.repo.findOneBy({ id: parseInt(id) })
         if(!device) {
             throw new NotFoundException('Device not found');

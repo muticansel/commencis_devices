@@ -7,6 +7,7 @@ import { User } from '../users/user.entity';
 import { DeviceDto } from './dtos/device.dto';
 import { Serialize } from '../interceptors/serialize-interceptor';
 import { AuthGuard } from '../guards/auth.guard';
+import { AdminGuard } from '../guards/admin.guard';
 import { ApproveDeviceDto } from './dtos/approve-device.dto';
 
 @Controller('devices')
@@ -26,8 +27,8 @@ export class DevicesController {
     }
 
     @Patch('/:id')
+    @UseGuards(AdminGuard)
     approveDevice(@Param('id') id: string, @Body() body: ApproveDeviceDto) {
-        console.log(body);
         return this.devicesService.changeApproval(id, body.approved)
     }
 
