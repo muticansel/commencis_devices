@@ -22,6 +22,7 @@ export class DevicesController {
     }
 
     @Get('/')
+    @Serialize(DeviceDto)
     findAllDevice() {
         return this.devicesService.find();
     }

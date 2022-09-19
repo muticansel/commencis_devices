@@ -21,7 +21,7 @@ export class DevicesService {
     }
 
     find() {
-        return this.repo.findBy({ });
+        return this.repo.find({ relations: ['user']});
     }
 
     async update(id: number, attrs: Partial<Device>) {
