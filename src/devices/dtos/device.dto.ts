@@ -12,4 +12,8 @@ export class DeviceDto {
     @Transform(({ obj }) => obj.user.id)
     @Expose()
     userId: string;
+
+    @Transform(({ obj }) => obj.user.email)
+    @Expose()
+    userEmail: string;
 }
