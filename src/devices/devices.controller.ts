@@ -15,7 +15,6 @@ export class DevicesController {
     constructor(private devicesService: DevicesService) {};
 
     @Post('/')
-    @UseGuards(AuthGuard)
     @Serialize(DeviceDto)
     createDevice(@Body() body: CreateDeviceDto, @CurrentUser() user: User) {
         return this.devicesService.create(body, user);
