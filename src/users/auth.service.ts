@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 import { UsersService } from './users.service';
@@ -7,12 +8,15 @@ const scrypt = promisify(_scrypt);
 
 @Injectable()
 export class AuthService {
-    constructor(private usersService: UsersService) {}
+    constructor(
+        private usersService: UsersService,
+        private jwtService: JwtService
+    ) { }
 
     async signUp(email: string, password: string) {
         // Check if email is in use
         const users = await this.usersService.find(email);
-        if(users.length) {
+        if (users.length) {
             throw new BadRequestException('Email in use');
         }
 
@@ -34,7 +38,7 @@ export class AuthService {
     async signIn(email: string, password: string) {
         const [user] = await this.usersService.find(email);
 
-        if(!user) {
+        if (!user) {
             throw new NotFoundException('User not found')
         }
 
@@ -42,9 +46,43 @@ export class AuthService {
 
         const hash = (await scrypt(password, salt, 32)) as Buffer;
 
-        if(storedHash !== hash.toString('hex')) {
+        if (storedHash !== hash.toString('hex')) {
             throw new BadRequestException('Wrong password')
         }
         return user;
+    }
+
+    async validateUser(email: string, pass: string): Promise<any> {
+        const [user] = await this.usersService.find(email);
+        if (user && this.validatePassword(pass, user)) {
+            const { password, ...result } = user;
+            return result;
+        }
+        return null;
+    }
+
+    async login(user: any) {
+        const [_user] = await this.usersService.find(user.email)
+        const payload = { email: _user.email, sub: _user.id };
+        const access_token = await this.jwtService.sign(payload);
+        return {
+            access_token
+        };
+    }
+
+    async validatePassword(password: string, user: any) {
+        if (!user) {
+            throw new NotFoundException('User not found')
+        }
+
+        const [salt, storedHash] = user.password.split('.');
+
+        const hash = (await scrypt(password, salt, 32)) as Buffer;
+
+        if (storedHash !== hash.toString('hex')) {
+            throw new BadRequestException('Wrong password')
+        }
+
+        return true;
     }
 }
