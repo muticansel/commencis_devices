@@ -4,13 +4,18 @@ import { User } from '../users/user.entity';
 import { Repository } from 'typeorm';
 import { Device } from './device.entity';
 import { CreateDeviceDto } from './dtos/create-device.dto';
+import * as moment from 'moment';
 
 @Injectable()
 export class DevicesService {
     constructor(@InjectRepository(Device) private repo: Repository<Device>) {}
 
     create(deviceDto: CreateDeviceDto, user: User) {
-        const device = this.repo.create(deviceDto);
+        let newDevice = {
+            ...deviceDto,
+            possessionDate: moment(deviceDto.possessionDate, 'DD/MM/YYYY').toDate(),
+        }
+        const device = this.repo.create(newDevice);
         device.user = user;
 
         return this.repo.save(device);

@@ -9,6 +9,7 @@ import {
     NotFoundException,
     Session,
     UseGuards,
+    Res,
 } from '@nestjs/common';
 import { Serialize } from '../interceptors/serialize-interceptor';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -17,7 +18,8 @@ import { UsersService } from './users.service';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user-decorator';
 import { User } from './user.entity';
-import { AuthGuard } from '../guards/auth.guard';
+import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'express';
 
 @Controller('auth')
 @Serialize(UserDto)
@@ -28,24 +30,19 @@ export class UsersController {
     ) { };
 
     @Post('/signup')
-    async createUser(@Body() body: CreateUserDto, @Session() session: any) {
+    async createUser(@Body() body: CreateUserDto) {
         const user = await this.authService.signUp(body.email, body.password)
-        session.userId = user.id;
         return user;
     }
 
+    @UseGuards(AuthGuard('local'))
     @Post('/signin')
-    async signin(@Body() body: CreateUserDto, @Session() session: any) {
-        const { email, password } = body;
-        const user = await this.authService.signIn(email, password);
-        session.userId = user.id;
-        return user;
+    async signin(@Body() body: CreateUserDto, @Res() response: Response) {
+        const loginResp = await this.authService.login(body);
+        response.send({
+            access_token: loginResp.access_token
+        })
     }
-
-    // @Get('/whoami')
-    // whoAmI(@Session() session: any) {
-    //     return this.usersService.findOne(session.userId);
-    // }
 
     @Get('/whoami')
     whoAmI(@CurrentUser() user: User) {
