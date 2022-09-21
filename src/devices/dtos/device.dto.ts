@@ -3,6 +3,8 @@ import { User } from "../../users/user.entity";
 
 export class DeviceDto {
     @Expose()
+    id: string;
+    @Expose()
     name: string;
     @Expose()
     possessionDate: Date;
