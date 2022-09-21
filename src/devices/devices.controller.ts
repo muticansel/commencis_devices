@@ -3,14 +3,13 @@ import { UsersService } from '../users/users.service';
 import { DevicesService } from './devices.service';
 import { CreateDeviceDto } from './dtos/create-device.dto';
 import { UpdateDeviceDto } from './dtos/update-device.dto';
-import { CurrentUser } from '../users/decorators/current-user-decorator';
-import { User } from '../users/user.entity';
 import { DeviceDto } from './dtos/device.dto';
 import { Serialize } from '../interceptors/serialize-interceptor';
 import { AdminGuard } from '../guards/admin.guard';
 import { ApproveDeviceDto } from './dtos/approve-device.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth-guard';
 import { JwtService } from '@nestjs/jwt';
+import * as moment from 'moment';
 
 @Controller('devices')
 export class DevicesController {
@@ -37,6 +36,16 @@ export class DevicesController {
     }
 
     @Patch('/:id')
+    @UseGuards(JwtAuthGuard)
+    updateDevice(@Param('id') id: string, @Body() body: UpdateDeviceDto) {
+        const updatedDevice = {
+            ...body,
+            possessionDate: moment(body.possessionDate, 'DD/MM/YYYY').toDate()
+        }
+        return this.devicesService.update(parseInt(id), updatedDevice)
+    }
+
+    @Patch('/approve/:id')
     @UseGuards(AdminGuard)
     @UseGuards(JwtAuthGuard)
     approveDevice(@Param('id') id: string, @Body() body: ApproveDeviceDto) {
